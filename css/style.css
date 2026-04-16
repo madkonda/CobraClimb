@@ -764,3 +764,24 @@ a:hover { text-decoration: underline; }
 .justify-center { justify-content: center; }
 .align-center { align-items: center; }
 .w-100 { width: 100%; }
+
+/* ── Loading Spinner (shown while dice submits) ── */
+.spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Active player cell highlight ── */
+.cell-active-player {
+  box-shadow: 0 0 10px rgba(255,255,255,0.3);
+  z-index: 5;
+}
