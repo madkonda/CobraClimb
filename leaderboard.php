@@ -11,7 +11,8 @@ $scores = $_SESSION['leaderboard'] ?? [];
 
 // Restore cookie-persisted scores from previous sessions
 if (empty($scores) && isset($_COOKIE['cobra_leaderboard'])) {
-    $cookie = @unserialize(base64_decode($_COOKIE['cobra_leaderboard']));
+    $cookie = is_string($_COOKIE['cobra_leaderboard']) ? @unserialize(base64_decode($_COOKIE['cobra_leaderboard']));
+    )) : false;
     if (is_array($cookie)) {
         $scores = $cookie;
     }
