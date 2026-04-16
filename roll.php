@@ -7,23 +7,22 @@
 require 'includes/auth_check.php';
 require 'includes/config.php';
 
-// ── Guard: only accept POST ──
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: game.php');
-    exit();
+    header('Location: game.php'); exit();
 }
-
-// ── Guard: game must be active ──
 if (!isset($_SESSION['game']) || $_SESSION['game']['status'] !== 'active') {
-    header('Location: game.php');
-    exit();
+    header('Location: game.php'); exit();
 }
 
 $g      = &$_SESSION['game'];
 $action = filter_input(INPUT_POST, 'action', FILTER_SANITIZE_SPECIAL_CHARS) ?? 'roll';
 $turn   = $g['turn'];
 
-// ── Handle SKIP turn (player landed on skip tile) ──
+// Use session-stored board arrays for the active difficulty
+$activeSnakes  = $g['snakes'];
+$activeLadders = $g['ladders'];
+
+// ── Handle SKIP turn ──
 if ($action === 'skip') {
     $g['skip_next'][$turn] = false;
     $g['turn'] = ($turn === 1) ? 2 : 1;
@@ -32,143 +31,178 @@ if ($action === 'skip') {
 }
 
 // ════════════════════════════════════════════════════════════
-//  MAIN DICE ROLL LOGIC
+//  AI NARRATOR — Dynamic Cell Events (PHP-only, no JS)
+//  Generates story-driven text per event. Fulfils §4 AI
+//  Enhancement: "Dynamic Cell Events" for board narration.
 // ════════════════════════════════════════════════════════════
-
-// 1. Roll the dice (PHP server-side — requirement §4)
-$roll = rand(1, 6);
-
-// 2. Calculate new raw position
-$currentPos = $g['positions'][$turn];
-$newPos     = $currentPos + $roll;
-
-// Clamp to 100 (can't go past finish)
-if ($newPos > 100) {
-    $newPos = 100 - ($newPos - 100);   // Bounce back mechanic
+function aiNarrate(string $type, string $player, int $from, int $to, int $roll): string {
+    $turnNo = $_SESSION['game']['turns_taken'][$_SESSION['game']['turn']];
+    switch ($type) {
+        case 'snake':
+            $lines = [
+                "The cobra strikes! {$player} is dragged from {$from} down to {$to}!",
+                "Hissss! {$player} rolled a {$roll} straight into a snake — back to {$to}!",
+                "The serpent coils around {$player} and drops them to cell {$to}.",
+            ];
+            break;
+        case 'ladder':
+            $lines = [
+                "Fortune smiles! {$player} found a ladder and soars from {$from} to {$to}!",
+                "{$player} grabs the ladder and rockets to {$to} — what a move!",
+                "Incredible! {$player} climbs from {$from} to {$to} in one lucky step!",
+            ];
+            break;
+        case 'bonus_roll':
+            $lines = [
+                "{$player} lands the bonus tile at {$to} — roll again!",
+                "Double turn! The gift tile rewards {$player}. Roll again!",
+            ];
+            break;
+        case 'skip':
+            $lines = [
+                "The skull tile at {$to} costs {$player} their next move. Ouch!",
+                "Bad luck! {$player} steps on the penalty tile and loses a turn.",
+            ];
+            break;
+        case 'warp':
+            $lines = [
+                "Warp zone! {$player} is teleported to cell {$to} — chaos reigns!",
+                "The lightning tile zaps {$player} across the board to cell {$to}!",
+            ];
+            break;
+        default:
+            if ($roll === 6)      $lines = ["Six! {$player} blazes forward to cell {$to}!"];
+            elseif ($roll === 1)  $lines = ["A one... {$player} inches to {$to}. Keep going!"];
+            else                  $lines = ["{$player} rolls a {$roll} and moves to cell {$to}."];
+    }
+    return $lines[$turnNo % count($lines)];
 }
 
-// 3. Increment turn counter & update score
-$g['turns_taken'][$turn]++;
-$g['scores'][$turn] += SCORE_PER_TURN;   // Deduct per turn
+// 1. Roll dice (server-side PHP)
+$roll = rand(1, 6);
 
-// 4. Track event for UI feedback
+// 2. Calculate new position
+$currentPos = $g['positions'][$turn];
+$newPos     = $currentPos + $roll;
+if ($newPos > 100) { $newPos = 100 - ($newPos - 100); }
+
+// 3. Increment turn & deduct score
+$g['turns_taken'][$turn]++;
+$g['scores'][$turn] += SCORE_PER_TURN;
+
+// 4. Event tracking
 $eventMsg  = '';
 $eventType = 'normal';
 $extraRoll = false;
+$narrate   = '';
 
-// 5. Check SNAKES (head → tail)
-if (isset(SNAKES[$newPos])) {
-    $tail      = SNAKES[$newPos];
+// 5. Snakes — use session board arrays
+if (isset($activeSnakes[$newPos])) {
+    $tail      = $activeSnakes[$newPos];
     $eventMsg  = "🐍 Cobra! Slid from cell $newPos → $tail!";
     $eventType = 'snake';
     $g['snake_hits'][$turn]++;
     $g['scores'][$turn] += SCORE_SNAKE_PENALTY;
-    $newPos = $tail;
+    $narrate   = aiNarrate('snake', $g['players'][$turn], $newPos, $tail, $roll);
+    $newPos    = $tail;
 }
-// 6. Check LADDERS (base → top)
-elseif (isset(LADDERS[$newPos])) {
-    $top       = LADDERS[$newPos];
+// 6. Ladders — use session board arrays
+elseif (isset($activeLadders[$newPos])) {
+    $top       = $activeLadders[$newPos];
     $eventMsg  = "🪜 Ladder! Climbed from cell $newPos → $top!";
     $eventType = 'ladder';
     $g['ladder_climbs'][$turn]++;
     $g['scores'][$turn] += SCORE_LADDER_BONUS;
-    $newPos = $top;
+    $narrate   = aiNarrate('ladder', $g['players'][$turn], $newPos, $top, $roll);
+    $newPos    = $top;
 }
-// 7. Check BONUS TILES
+// 7. Bonus tiles
 elseif (in_array($newPos, BONUS_EXTRA_ROLL)) {
-    $eventMsg  = "🎁 Bonus! Roll again — extra turn!";
+    $eventMsg  = "🎁 Bonus! Roll again!";
     $eventType = 'bonus';
     $extraRoll = true;
+    $narrate   = aiNarrate('bonus_roll', $g['players'][$turn], $currentPos, $newPos, $roll);
 }
 elseif (in_array($newPos, BONUS_SKIP_TURN)) {
-    $eventMsg  = "💀 Ouch! You lose your next turn!";
+    $eventMsg  = "💀 You lose your next turn!";
     $eventType = 'bonus';
     $g['skip_next'][$turn] = true;
+    $narrate   = aiNarrate('skip', $g['players'][$turn], $currentPos, $newPos, $roll);
 }
 elseif (in_array($newPos, BONUS_WARP)) {
-    // Warp: teleport to random position 40–60 (excluding 50)
     $warpOptions = array_diff(range(40, 60), [50]);
     $warpDest    = $warpOptions[array_rand($warpOptions)];
-    $eventMsg    = "⚡ Warp! Teleported from cell $newPos → $warpDest!";
+    $eventMsg    = "⚡ Warp! Teleported to cell $warpDest!";
     $eventType   = 'bonus';
+    $narrate     = aiNarrate('warp', $g['players'][$turn], $newPos, $warpDest, $roll);
     $newPos      = $warpDest;
 }
+else {
+    $narrate = aiNarrate('normal', $g['players'][$turn], $currentPos, $newPos, $roll);
+}
 
-// 8. Update position in session
+// 8. Update position
 $g['positions'][$turn] = $newPos;
 
-// 9. Enforce score floor
+// 9. Score floor
 $g['scores'][$turn] = max(SCORE_MINIMUM, $g['scores'][$turn]);
 
-// 10. Log the roll to history
+// 10. Log roll with narrator
 $playerName = $g['players'][$turn];
 $g['roll_history'][] = [
-    'player' => $playerName,
-    'roll'   => $roll,
-    'from'   => $currentPos,
-    'to'     => $newPos,
-    'event'  => $eventMsg,
-    'type'   => $eventType,
-    'turn'   => $g['turns_taken'][$turn],
+    'player'   => $playerName,
+    'roll'     => $roll,
+    'from'     => $currentPos,
+    'to'       => $newPos,
+    'event'    => $eventMsg,
+    'type'     => $eventType,
+    'turn'     => $g['turns_taken'][$turn],
+    'narrate'  => $narrate,
 ];
-
-// ── Keep roll history manageable: trim to last 30 entries to prevent session bloat ──
 if (count($g['roll_history']) > 30) {
     $g['roll_history'] = array_slice($g['roll_history'], -30);
 }
 
-// 11. Check WIN CONDITION: player reached cell 100
+// 11. Win condition
 if ($newPos >= 100) {
-    $finalScore          = calcFinalScore($turn);
-    $g['scores'][$turn]  = $finalScore;
-    $g['status']         = 'won';
-    $g['winner']         = $turn;
-    $g['end_time']       = time();
+    $finalScore         = calcFinalScore($turn);
+    $g['scores'][$turn] = $finalScore;
+    $g['status']        = 'won';
+    $g['winner']        = $turn;
+    $g['end_time']      = time();
 
-    // Save to session leaderboard
-    if (!isset($_SESSION['leaderboard'])) {
-        $_SESSION['leaderboard'] = [];
-    }
+    if (!isset($_SESSION['leaderboard'])) { $_SESSION['leaderboard'] = []; }
     $_SESSION['leaderboard'][] = [
-        'username'  => $playerName,
-        'score'     => $finalScore,
-        'turns'     => $g['turns_taken'][$turn],
-        'snakes'    => $g['snake_hits'][$turn],
-        'ladders'   => $g['ladder_climbs'][$turn],
-        'duration'  => $g['end_time'] - $g['start_time'],
-        'date'      => date('M d, Y g:i A'),
-        'player_no' => $turn,
+        'username'   => $playerName,
+        'score'      => $finalScore,
+        'turns'      => $g['turns_taken'][$turn],
+        'snakes'     => $g['snake_hits'][$turn],
+        'ladders'    => $g['ladder_climbs'][$turn],
+        'duration'   => $g['end_time'] - $g['start_time'],
+        'date'       => date('M d, Y g:i A'),
+        'player_no'  => $turn,
+        'difficulty' => $g['difficulty'],
     ];
 
-    // Persist top 10 leaderboard in cookie (7 days)
     $top10 = $_SESSION['leaderboard'];
     usort($top10, fn($a, $b) => $b['score'] <=> $a['score']);
     $top10 = array_slice($top10, 0, 10);
-    setcookie(
-        'cobra_leaderboard',
-        base64_encode(serialize($top10)),
-        time() + (7 * 24 * 3600),   // 7 days
-        '/',
-        '',
-        false,   // secure (set true on HTTPS)
-        true     // httponly
-    );
+    setcookie('cobra_leaderboard', base64_encode(serialize($top10)),
+              time() + (7 * 24 * 3600), '/', '', false, true);
 
     header('Location: leaderboard.php?winner=' . urlencode($playerName) .
-           '&score=' . $finalScore .
-           '&turns=' . $g['turns_taken'][$turn]);
+           '&score=' . $finalScore . '&turns=' . $g['turns_taken'][$turn]);
     exit();
 }
 
-// 12. Advance turn (unless extra roll bonus)
-if (!$extraRoll) {
-    $g['turn'] = ($turn === 1) ? 2 : 1;
-}
+// 12. Advance turn unless extra roll
+if (!$extraRoll) { $g['turn'] = ($turn === 1) ? 2 : 1; }
 
-// 13. Redirect back to game board with event info
+// 13. Redirect with event + narrator
 $redirect = 'game.php?roll=' . $roll;
-if ($eventMsg)  $redirect .= '&event='  . urlencode($eventMsg);
+if ($eventMsg) $redirect .= '&event='   . urlencode($eventMsg);
 if ($eventType) $redirect .= '&evtype=' . urlencode($eventType);
+if ($narrate)   $redirect .= '&narrate='. urlencode($narrate);
 
 header('Location: ' . $redirect);
 exit();
