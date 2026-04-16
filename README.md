@@ -48,27 +48,15 @@ CobraClimb/
 
 ---
 
-## ⚙️ Setup Instructions
+## ⚙️ Setup Instructions (Local — XAMPP)
 
-### Local (XAMPP)
 1. Clone this repo into your XAMPP `htdocs` folder
 2. Start Apache in XAMPP
 3. Visit `http://localhost/CobraClimb/`
 4. Register an account and start playing!
 
-### CODD Server
-1. Upload all files to: `public_html/CobraClimb/`
-2. Ensure PHP 7.4+ is active on CODD
-3. Visit: `https://codd.cs.gsu.edu/~[username]/CobraClimb/`
-
-**PHP Version Required:** 7.4 or higher
+**PHP Version Required:** 7.4 or higher  
 **No database required** — uses flat-file JSON storage
-
----
-
-## 🔗 Live URL
-
-`https://codd.cs.gsu.edu/~madkonda/CobraClimb/`
 
 ---
 
