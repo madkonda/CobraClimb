@@ -5,28 +5,64 @@
 // Madhu Sudhan Reddy Konda & Harika Kakarala
 // ============================================================
 
-// ── Snake positions: head cell => tail cell (Expert: 9 snakes) ──
-define('SNAKES', [
-    99 => 41,   // Mega cobra near the finish — most punishing
-    95 => 56,   // Big drop from near-finish
-    87 => 24,   // Long mid-to-bottom slither
-    62 => 19,   // Mid-board danger zone
-    54 => 34,   // Short penalty drop
-    46 => 25,   // Side-board slide
-    40 =>  3,   // Brutal early-game drop
-    32 => 12,   // Early board trap
-    17 =>  7,   // Starter cobra (small but annoying)
-]);
+// ════════════════════════════════════════════════════════
+//  BOARD LAYOUTS — 3 Difficulty Tiers
+// ════════════════════════════════════════════════════════
 
-// ── Ladder positions: base cell => top cell (Expert: 4 ladders) ──
-define('LADDERS', [
+// ── Easy board: 3 snakes, 3 ladders ──
+define('SNAKES_EASY', [
+    62 => 19,   // Mid-board cobra
+    40 =>  3,   // Early drop
+    17 =>  7,   // Starter cobra
+]);
+define('LADDERS_EASY', [
      4 => 14,   // Short early climb
-     9 => 31,   // Decent first-turn boost
+     9 => 31,   // Decent boost
     20 => 38,   // Mid-tier lift
-    28 => 84,   // Big lucky climb — game changer
 ]);
 
-// ── Bonus tile positions ──
+// ── Standard board: 6 snakes, 5 ladders ──
+define('SNAKES_STANDARD', [
+    99 => 41,   // Near-finish danger
+    87 => 24,   // Long slither
+    62 => 19,   // Mid-board
+    54 => 34,   // Short penalty
+    40 =>  3,   // Early drop
+    17 =>  7,   // Starter cobra
+]);
+define('LADDERS_STANDARD', [
+     4 => 14,
+     9 => 31,
+    20 => 38,
+    28 => 84,   // Big climb
+    51 => 67,   // Upper board boost
+]);
+
+// ── Expert board: 9 snakes, 4 ladders ──
+define('SNAKES_EXPERT', [
+    99 => 41,
+    95 => 56,
+    87 => 24,
+    62 => 19,
+    54 => 34,
+    46 => 25,
+    40 =>  3,
+    32 => 12,
+    17 =>  7,
+]);
+define('LADDERS_EXPERT', [
+     4 => 14,
+     9 => 31,
+    20 => 38,
+    28 => 84,
+]);
+
+// ── Active board (set by initGame based on difficulty) ──
+// Defaults to Expert; overridden in session init below
+define('SNAKES',  SNAKES_EXPERT);
+define('LADDERS', LADDERS_EXPERT);
+
+// ── Bonus tile positions (same on all difficulties) ──
 define('BONUS_EXTRA_ROLL', [6, 23]);    // 🎁 Land here = roll again immediately
 define('BONUS_SKIP_TURN',  [35, 67]);   // 💀 Land here = lose your next turn
 define('BONUS_WARP',       [50]);       // ⚡ Land here = teleport to random cell 40–60
@@ -80,24 +116,44 @@ function findUser(string $username): ?array {
  * Initialize a fresh game session for two players.
  * Resets all positions, scores, turn order, and timestamps.
  *
- * @param string $p1 Player 1 username (logged-in user)
- * @param string $p2 Player 2 name (pass-and-play or guest)
+ * @param string $p1         Player 1 username (logged-in user)
+ * @param string $p2         Player 2 name (pass-and-play or guest)
+ * @param string $difficulty Board layout: 'easy' | 'standard' | 'expert'
  */
-function initGame(string $p1, string $p2): void {
+function initGame(string $p1, string $p2, string $difficulty = 'expert'): void {
+    // Select snake/ladder arrays based on chosen difficulty
+    $difficulty = in_array($difficulty, ['easy','standard','expert']) ? $difficulty : 'expert';
+    switch ($difficulty) {
+        case 'easy':
+            $snakes  = SNAKES_EASY;
+            $ladders = LADDERS_EASY;
+            break;
+        case 'standard':
+            $snakes  = SNAKES_STANDARD;
+            $ladders = LADDERS_STANDARD;
+            break;
+        default:
+            $snakes  = SNAKES_EXPERT;
+            $ladders = LADDERS_EXPERT;
+    }
+
     $_SESSION['game'] = [
         'players'       => [1 => $p1, 2 => $p2],
-        'positions'     => [1 => 0, 2 => 0],       // 0 = off-board starting position
-        'turn'          => 1,                        // Player 1 goes first
+        'positions'     => [1 => 0, 2 => 0],
+        'turn'          => 1,
         'scores'        => [1 => SCORE_BASE, 2 => SCORE_BASE],
         'turns_taken'   => [1 => 0, 2 => 0],
         'snake_hits'    => [1 => 0, 2 => 0],
         'ladder_climbs' => [1 => 0, 2 => 0],
-        'skip_next'     => [1 => false, 2 => false], // Bonus skip-turn flag
-        'roll_history'  => [],                       // Last 30 roll events
+        'skip_next'     => [1 => false, 2 => false],
+        'roll_history'  => [],
         'start_time'    => time(),
-        'status'        => 'active',                 // active | won
+        'status'        => 'active',
         'winner'        => null,
         'end_time'      => null,
+        'difficulty'    => $difficulty,   // Store for display & roll.php logic
+        'snakes'        => $snakes,       // Active board snake map
+        'ladders'       => $ladders,      // Active board ladder map
     ];
 }
 
