@@ -127,6 +127,16 @@ require 'includes/header.php';
 
         <div class="board-title">🐍 CobraClimb Board 🪜</div>
 
+        <!-- Live game timer -->
+        <?php
+            $elapsed  = time() - $g['start_time'];
+            $minutes  = floor($elapsed / 60);
+            $seconds  = $elapsed % 60;
+        ?>
+        <div class="text-muted" style="font-size:0.8rem;text-align:center;">
+            ⏱ Game time: <?= sprintf('%d:%02d', $minutes, $seconds) ?>
+        </div>
+
         <!-- Off-board start zone (players at position 0) -->
         <?php if ($pos1 === 0 || $pos2 === 0): ?>
         <div class="start-zone">
