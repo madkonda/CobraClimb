@@ -11,7 +11,9 @@ if (!isset($_SESSION['game']) || isset($_GET['new'])) {
     $p2Name = isset($_GET['p2']) && trim($_GET['p2']) !== ''
         ? htmlspecialchars(trim($_GET['p2']))
         : 'Player 2';
-    initGame($_SESSION['user'], $p2Name);
+    $diff = isset($_GET['diff']) && in_array($_GET['diff'], ['easy','standard','expert'])
+        ? $_GET['diff'] : 'expert';
+    initGame($_SESSION['user'], $p2Name, $diff);
 }
 
 $g       = &$_SESSION['game'];
@@ -21,10 +23,11 @@ $p2      = $g['players'][2];
 $pos1    = $g['positions'][1];
 $pos2    = $g['positions'][2];
 
-// Retrieve any event message from roll.php redirect
-$event   = filter_input(INPUT_GET, 'event',   FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$evType  = filter_input(INPUT_GET, 'evtype',  FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
-$lastRoll = filter_input(INPUT_GET, 'roll',   FILTER_SANITIZE_NUMBER_INT)    ?? '';
+// Retrieve any event message + AI narrator line from roll.php redirect
+$event    = filter_input(INPUT_GET, 'event',   FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$evType   = filter_input(INPUT_GET, 'evtype',  FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
+$lastRoll = filter_input(INPUT_GET, 'roll',    FILTER_SANITIZE_NUMBER_INT)    ?? '';
+$narrate  = filter_input(INPUT_GET, 'narrate', FILTER_SANITIZE_SPECIAL_CHARS) ?? '';
 
 // ── Build the board cell order (top-left=100, snake pattern) ──
 $boardCells = buildBoardOrder();
@@ -97,6 +100,13 @@ require 'includes/header.php';
                 </div>
             <?php endif; ?>
 
+            <!-- AI Narrator — dynamic story text per event (pure PHP) -->
+            <?php if ($narrate): ?>
+                <div class="ai-narrator">
+                    🤖 <?= htmlspecialchars($narrate) ?>
+                </div>
+            <?php endif; ?>
+
             <!-- Skip notice -->
             <?php if ($g['skip_next'][$turn]): ?>
                 <div class="skip-notice">💀 <?= htmlspecialchars($turn === 1 ? $p1 : $p2) ?> loses this turn!</div>
@@ -112,12 +122,25 @@ require 'includes/header.php';
             <?php endif; ?>
         </div>
 
-        <!-- New game link -->
-        <div class="mt-2 text-center">
-            <a href="game.php?new=1" class="btn btn-ghost" style="width:100%;font-size:0.8rem;"
-               onclick="return confirm('Start a new game? Current progress will be lost.')">
-                🔄 New Game
-            </a>
+        <!-- Difficulty + New Game -->
+        <div class="mt-2">
+            <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.35rem;text-align:center;">
+                🎚 Difficulty:
+                <strong style="color:var(--text);">
+                    <?= $g['difficulty'] === 'easy' ? '🟢 Easy' : ($g['difficulty'] === 'standard' ? '🟡 Standard' : '🔴 Expert') ?>
+                </strong>
+            </div>
+            <div class="diff-selector">
+                <a href="game.php?new=1&diff=easy"
+                   class="diff-btn diff-easy <?= $g['difficulty']==='easy' ? 'diff-active' : '' ?>"
+                   onclick="return confirm('Start new Easy game?')">🟢 Easy</a>
+                <a href="game.php?new=1&diff=standard"
+                   class="diff-btn diff-standard <?= $g['difficulty']==='standard' ? 'diff-active' : '' ?>"
+                   onclick="return confirm('Start new Standard game?')">🟡 Standard</a>
+                <a href="game.php?new=1&diff=expert"
+                   class="diff-btn diff-expert <?= $g['difficulty']==='expert' ? 'diff-active' : '' ?>"
+                   onclick="return confirm('Start new Expert game?')">🔴 Expert</a>
+            </div>
         </div>
 
     </aside>
@@ -147,10 +170,32 @@ require 'includes/header.php';
         <?php endif; ?>
 
         <!-- 10×10 Board Grid -->
-        <div class="board" role="grid" aria-label="CobraClimb Snakes and Ladders game board, 10 by 10 grid, cell 100 top left to cell 1 bottom left">
+        <?php $activeSnakes = $g['snakes']; $activeLadders = $g['ladders']; ?>
+        <div class="board" role="grid" aria-label="CobraClimb Snakes and Ladders game board, <?= $g['difficulty'] ?> difficulty, cell 100 top left to cell 1 bottom left">
             <?php foreach ($boardCells as $cell):
-                $type    = cellType($cell);
-                $icon    = cellIcon($cell);
+                // Use session-stored board data for active difficulty
+                $isSnakeHead = isset($activeSnakes[$cell]);
+                $isSnakeTail = in_array($cell, $activeSnakes);
+                $isLadderBase = isset($activeLadders[$cell]);
+                $isLadderTop  = in_array($cell, $activeLadders);
+                $type = '';
+                if ($isSnakeHead)  $type = 'snake-head';
+                elseif ($isSnakeTail)  $type = 'snake-tail';
+                elseif ($isLadderBase) $type = 'ladder-base';
+                elseif ($isLadderTop)  $type = 'ladder-top';
+                elseif (in_array($cell, BONUS_EXTRA_ROLL)) $type = 'bonus-roll';
+                elseif (in_array($cell, BONUS_SKIP_TURN))  $type = 'bonus-skip';
+                elseif (in_array($cell, BONUS_WARP))       $type = 'bonus-warp';
+
+                $icon = '';
+                if ($isSnakeHead)  $icon = '🐍';
+                elseif ($isSnakeTail)  $icon = '💀';
+                elseif ($isLadderBase) $icon = '🪜';
+                elseif ($isLadderTop)  $icon = '⬆';
+                elseif (in_array($cell, BONUS_EXTRA_ROLL)) $icon = '🎁';
+                elseif (in_array($cell, BONUS_SKIP_TURN))  $icon = '⛔';
+                elseif (in_array($cell, BONUS_WARP))       $icon = '⚡';
+
                 $isFinish = ($cell === 100);
                 $classes  = 'cell';
                 if ($type)     $classes .= ' ' . $type;
@@ -158,8 +203,8 @@ require 'includes/header.php';
             ?>
             <?php
                 $dest = '';
-                if (isset(SNAKES[$cell]))        $dest = ' data-dest="' . SNAKES[$cell] . '"';
-                elseif (isset(LADDERS[$cell]))   $dest = ' data-dest="' . LADDERS[$cell] . '"';
+                if ($isSnakeHead)   $dest = ' data-dest="' . $activeSnakes[$cell]  . '"';
+                elseif ($isLadderBase) $dest = ' data-dest="' . $activeLadders[$cell] . '"';
             ?>
             <div class="<?= $classes ?>" title="Cell <?= $cell ?>"<?= $dest ?>>
                 <span class="cell-num"><?= $cell ?></span>
