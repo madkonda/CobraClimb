@@ -147,7 +147,7 @@ require 'includes/header.php';
         <?php endif; ?>
 
         <!-- 10×10 Board Grid -->
-        <div class="board" role="grid" aria-label="CobraClimb game board">
+        <div class="board" role="grid" aria-label="CobraClimb Snakes and Ladders game board, 10 by 10 grid, cell 100 top left to cell 1 bottom left">
             <?php foreach ($boardCells as $cell):
                 $type    = cellType($cell);
                 $icon    = cellIcon($cell);
