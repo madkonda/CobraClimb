@@ -96,6 +96,17 @@ Individual contribution can be traced by author on each commit (`git log --oneli
 
 ---
 
+## 🤖 AI Usage Disclosure
+
+In accordance with the course rubric requirement, the team discloses the following AI tool usage:
+
+- **Claude (Anthropic)** was used as a coding assistant during development — primarily for boilerplate scaffolding, debugging session logic, and drafting CSS variable structures.
+- All PHP game logic, board design decisions, scoring formulas, and Scrum documentation were authored and reviewed by team members.
+- The AI Narrator feature (`aiNarrate()` in `roll.php`) was designed and implemented by the team using pure PHP string arrays — no external AI API is called at runtime.
+- All code has been understood, tested, and modified by the team before submission.
+
+---
+
 ## 📅 Project Deadlines
 
 - **Proposal Due:** April 5, 2026 @ 11:59 PM
