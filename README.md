@@ -72,6 +72,23 @@ CobraClimb/
 
 ---
 
+## 🔀 Commit Conventions
+
+All commits follow the format: `[SprintN] filename — description`
+
+| Sprint | Focus |
+|--------|-------|
+| S1 | Project scaffold, auth pages, flat-file user store |
+| S2 | Game board, config constants, session game state |
+| S3 | Roll logic, bonus tiles, leaderboard, cookie persistence |
+| S4 | Security hardening, accessibility, edge-case fixes |
+| S5 | CSS polish, animations, responsive breakpoints |
+| S6 | Testing, DEVLOG, final documentation |
+
+Individual contribution can be traced by author on each commit (`git log --oneline --author="Name"`).
+
+---
+
 ## 📅 Project Deadlines
 
 - **Proposal Due:** April 5, 2026 @ 11:59 PM
