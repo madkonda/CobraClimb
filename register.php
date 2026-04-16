@@ -80,7 +80,9 @@ require 'includes/header.php';
                 <input type="text" id="username" name="username"
                        value="<?= $username_val ?>"
                        placeholder="3–20 chars, letters/numbers only"
-                       maxlength="20" required>
+                       maxlength="20"
+                       pattern="[a-zA-Z0-9_]+"
+                       title="Letters, numbers, and underscores only" required>
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
