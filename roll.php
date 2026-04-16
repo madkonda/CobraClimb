@@ -112,7 +112,7 @@ $g['roll_history'][] = [
     'turn'   => $g['turns_taken'][$turn],
 ];
 
-// ── Keep roll history manageable (last 30 entries) ──
+// ── Keep roll history manageable: trim to last 30 entries to prevent session bloat ──
 if (count($g['roll_history']) > 30) {
     $g['roll_history'] = array_slice($g['roll_history'], -30);
 }
