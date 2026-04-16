@@ -1,0 +1,21 @@
+# CobraClimb .gitignore
+
+# User data (security - don't commit real user passwords)
+data/users.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-project
+
+# PHP logs
+*.log
+error_log
+
+# Temp files
+*.tmp
+*.swp
