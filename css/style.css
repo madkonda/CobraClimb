@@ -785,3 +785,86 @@ a:hover { text-decoration: underline; }
   box-shadow: 0 0 10px rgba(255,255,255,0.3);
   z-index: 5;
 }
+
+/* ── CSS-only Dice Roll Animation ── */
+@keyframes diceRoll {
+  0%   { transform: rotate(0deg)   scale(1); }
+  25%  { transform: rotate(15deg)  scale(1.2); }
+  50%  { transform: rotate(-15deg) scale(0.9); }
+  75%  { transform: rotate(10deg)  scale(1.1); }
+  100% { transform: rotate(0deg)   scale(1); }
+}
+.dice-display {
+  display: inline-block;
+  font-size: 3.5rem;
+  line-height: 1;
+  animation: diceRoll 0.6s ease-in-out;
+}
+
+/* ── CSS-only Roll button press feedback ── */
+.btn-roll:active {
+  transform: scale(0.94);
+  opacity: 0.85;
+}
+
+/* ── CSS Confetti — pure CSS animated pieces ── */
+@keyframes confettiFall {
+  0%   { transform: translateY(-60px) rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(110vh)  rotate(720deg); opacity: 0; }
+}
+.confetti-piece {
+  position: fixed;
+  top: 0;
+  width: 10px; height: 10px;
+  animation: confettiFall linear forwards;
+  pointer-events: none;
+  z-index: 9999;
+}
+/* 20 statically positioned pieces — no JS needed */
+.confetti-piece:nth-child(1)  { left:5%;   background:#d29922; animation-duration:2.1s; animation-delay:0.0s; border-radius:50%; }
+.confetti-piece:nth-child(2)  { left:10%;  background:#2ea043; animation-duration:2.5s; animation-delay:0.1s; }
+.confetti-piece:nth-child(3)  { left:15%;  background:#58a6ff; animation-duration:1.8s; animation-delay:0.2s; border-radius:50%; }
+.confetti-piece:nth-child(4)  { left:20%;  background:#f85149; animation-duration:2.3s; animation-delay:0.0s; }
+.confetti-piece:nth-child(5)  { left:25%;  background:#bc8cff; animation-duration:2.0s; animation-delay:0.3s; border-radius:50%; }
+.confetti-piece:nth-child(6)  { left:30%;  background:#f0883e; animation-duration:2.7s; animation-delay:0.1s; }
+.confetti-piece:nth-child(7)  { left:35%;  background:#d29922; animation-duration:1.9s; animation-delay:0.2s; border-radius:50%; }
+.confetti-piece:nth-child(8)  { left:40%;  background:#2ea043; animation-duration:2.4s; animation-delay:0.0s; }
+.confetti-piece:nth-child(9)  { left:45%;  background:#58a6ff; animation-duration:2.2s; animation-delay:0.4s; border-radius:50%; }
+.confetti-piece:nth-child(10) { left:50%;  background:#f85149; animation-duration:2.6s; animation-delay:0.1s; }
+.confetti-piece:nth-child(11) { left:55%;  background:#bc8cff; animation-duration:2.0s; animation-delay:0.2s; border-radius:50%; }
+.confetti-piece:nth-child(12) { left:60%;  background:#f0883e; animation-duration:2.3s; animation-delay:0.0s; }
+.confetti-piece:nth-child(13) { left:65%;  background:#d29922; animation-duration:1.7s; animation-delay:0.3s; border-radius:50%; }
+.confetti-piece:nth-child(14) { left:70%;  background:#2ea043; animation-duration:2.5s; animation-delay:0.1s; }
+.confetti-piece:nth-child(15) { left:75%;  background:#58a6ff; animation-duration:2.1s; animation-delay:0.2s; border-radius:50%; }
+.confetti-piece:nth-child(16) { left:80%;  background:#f85149; animation-duration:2.4s; animation-delay:0.0s; }
+.confetti-piece:nth-child(17) { left:85%;  background:#bc8cff; animation-duration:1.9s; animation-delay:0.4s; border-radius:50%; }
+.confetti-piece:nth-child(18) { left:90%;  background:#f0883e; animation-duration:2.2s; animation-delay:0.1s; }
+.confetti-piece:nth-child(19) { left:93%;  background:#d29922; animation-duration:2.6s; animation-delay:0.2s; border-radius:50%; }
+.confetti-piece:nth-child(20) { left:97%;  background:#2ea043; animation-duration:2.0s; animation-delay:0.3s; }
+
+/* ── Difficulty selector buttons ── */
+.diff-selector { display:flex; gap:0.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+.diff-btn {
+  flex:1; padding:0.5rem; border:2px solid var(--border);
+  background:var(--panel2); color:var(--text);
+  border-radius:var(--radius); cursor:pointer;
+  font-size:0.85rem; text-align:center; text-decoration:none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.diff-btn:hover        { border-color:var(--blue); background:var(--panel); text-decoration:none; }
+.diff-btn.diff-easy    { border-color:var(--green); }
+.diff-btn.diff-standard{ border-color:var(--gold);  }
+.diff-btn.diff-expert  { border-color:var(--red);   }
+.diff-btn.diff-active  { background:var(--panel2); font-weight:700; }
+
+/* ── AI Narrator event box ── */
+.ai-narrator {
+  background: linear-gradient(135deg, rgba(88,166,255,0.12), rgba(188,140,255,0.12));
+  border: 1px solid rgba(88,166,255,0.35);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.83rem;
+  color: var(--text);
+  margin-top: 0.5rem;
+  font-style: italic;
+}

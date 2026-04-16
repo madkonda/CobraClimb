@@ -8,6 +8,5 @@
         Madhu Sudhan Reddy Konda &amp; Harika Kakarala
     </p>
 </footer>
-<script src="js/game.js"></script>
 </body>
 </html>
