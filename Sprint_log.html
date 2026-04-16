@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CobraClimb — Sprint Log · CSC 4370/6370 Spring 2026</title>
+<style>
+  :root{--bg:#0d1117;--panel:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--green:#2ea043;--blue:#58a6ff;--gold:#d29922;--red:#f85149;--radius:8px;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);padding:2rem;line-height:1.6;}
+  h1{font-size:1.8rem;margin-bottom:0.25rem;}
+  h2{font-size:1.1rem;color:var(--blue);margin:1.5rem 0 0.5rem;}
+  p.sub{color:var(--muted);margin-bottom:2rem;font-size:0.9rem;}
+  .sprint{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:1.5rem;overflow:hidden;}
+  .sprint-header{padding:0.75rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+  .sprint-header h3{font-size:1rem;}
+  .badge{padding:0.2rem 0.6rem;border-radius:20px;font-size:0.75rem;font-weight:700;}
+  .done{background:rgba(46,160,67,0.2);color:var(--green);}
+  table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  th,td{padding:0.55rem 1rem;text-align:left;border-bottom:1px solid var(--border);}
+  th{color:var(--muted);font-weight:600;background:rgba(255,255,255,0.03);}
+  tr:last-child td{border-bottom:none;}
+  .status-done{color:var(--green);}
+  .owner{color:var(--blue);}
+  .summary{padding:0.75rem 1rem;background:rgba(88,166,255,0.07);font-size:0.83rem;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<h1>🐍 CobraClimb — Sprint Log</h1>
+<p class="sub">CSC 4370/6370 · Web Programming · Spring 2026 · Georgia State University<br>
+Team: Madhu Sudhan Reddy Konda (Scrum Master) &amp; Harika Kakarala (Product Owner)</p>
+
+<!-- SPRINT 1 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 1 — Project Foundation (Days 1–3)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>Team role assignment (Scrum Master / Product Owner)</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Topic selection — Snakes &amp; Ladders (Topic 03)</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>Write Group Project Proposal 2</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Create GitHub repo — madkonda/CobraClimb</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Define project folder structure</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>DEVLOG.md — Day 1–3 entries</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: Proposal submitted. Repo created. Roles assigned. Dev environment confirmed working with PHP built-in server.</div>
+</div>
+
+<!-- SPRINT 2 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 2 — Core Development (Days 4–6)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>login.php — form, password_verify(), session start</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>register.php — flat-file user store, password_hash()</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>includes/auth_check.php — 45-min session timeout</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>includes/header.php — nav, dynamic titles</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>includes/footer.php — team names, dynamic year</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>data/.htaccess — deny direct access to users.json</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: Auth flow complete. Users can register, log in, and log out. Session guard working on protected pages.</div>
+</div>
+
+<!-- SPRINT 3 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 3 — PHP Logic &amp; Game Engine (Days 7–9)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>includes/config.php — 3 difficulty board layouts, scoring constants</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>game.php — 100-cell board via PHP loop, player tokens, timer</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>roll.php — rand(1,6) dice, snake/ladder detection, bonus tiles</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>AI Narrator — PHP aiNarrate() function for dynamic event text</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Difficulty selector — Easy/Standard/Expert board layouts</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>leaderboard.php — usort(), cookie persistence, win screen</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>logout.php — session_unset(), session_destroy()</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: Full game loop working end-to-end. Roll → event → position update → win condition verified. AI narrator live.</div>
+</div>
+
+<!-- SPRINT 4 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 4 — CSS Styling &amp; Responsive Design (Days 10–12)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>css/style.css — dark GitHub theme, CSS variables</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>Board grid — 10×10 CSS Grid, snake/ladder cell colours</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>CSS animations — diceRoll, confettiFall, tokenPop, winGlow</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>Responsive breakpoints — 1100px, 860px, 500px</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>Remove game.js — convert all animations to pure CSS (no JS penalty)</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Security hardening — SameSite=Lax cookie, session_set_cookie_params()</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: UI fully styled. No JavaScript in project. Responsive on mobile, tablet, and desktop confirmed.</div>
+</div>
+
+<!-- SPRINT 5 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 5 — Testing &amp; Integration (Days 13–15)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>End-to-end testing — register → login → play → win → leaderboard</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>Edge case: bounce-back at cell 100, skip-turn flow</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Cookie deserialization syntax fix in leaderboard.php</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>about.php — Team Intro page (required submission document)</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>Cross-browser test — Chrome, Firefox, Safari</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>CODD server upload and live URL verification</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: All 5 core requirements verified working. No PHP errors on CODD. Live URL confirmed accessible.</div>
+</div>
+
+<!-- SPRINT 6 -->
+<div class="sprint">
+  <div class="sprint-header">
+    <h3>Sprint 6 — Finalization &amp; Submission (Days 16–18)</h3>
+    <span class="badge done">✅ Done</span>
+  </div>
+  <table>
+    <thead><tr><th>Task</th><th>Owner</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr><td>DEVLOG.md — complete 18-day development journal</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>Sprint_log.html — this document</td><td class="owner">Harika</td><td class="status-done">Done</td></tr>
+      <tr><td>README.md — setup instructions, commit conventions, AI disclosure</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+      <tr><td>Record 15–20 min demo video (YouTube/Google Drive)</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>Submit .txt file with CODD + GitHub + Video links to i-College</td><td class="owner">Both</td><td class="status-done">Done</td></tr>
+      <tr><td>Final git push — 22+ meaningful commits</td><td class="owner">Madhu</td><td class="status-done">Done</td></tr>
+    </tbody>
+  </table>
+  <div class="summary">Sprint Review: All deliverables complete. Repo clean. Video uploaded. Submission .txt prepared. Project closed.</div>
+</div>
+
+<p style="color:var(--muted);font-size:0.8rem;text-align:center;margin-top:2rem;">
+  🐍 CobraClimb · CSC 4370/6370 · Georgia State University · Spring 2026
+</p>
+
+</body>
+</html>
