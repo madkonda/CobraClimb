@@ -6,6 +6,14 @@
 // ============================================================
 
 if (session_status() === PHP_SESSION_NONE) {
+    // Harden session cookie: SameSite=Lax prevents CSRF via cross-site form posts
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path'     => '/',
+        'secure'   => false,   // set true when deployed over HTTPS
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
     session_start();
 }
 
