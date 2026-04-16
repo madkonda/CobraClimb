@@ -48,11 +48,18 @@ CobraClimb/
 
 ---
 
-## ⚙️ Setup Instructions (Local — XAMPP)
+## ⚙️ Setup Instructions (Local)
 
-1. Clone this repo into your XAMPP `htdocs` folder
-2. Start Apache in XAMPP
-3. Visit `http://localhost/CobraClimb/`
+1. Clone this repo:
+   ```bash
+   git clone https://github.com/madkonda/CobraClimb.git
+   cd CobraClimb
+   ```
+2. Start PHP's built-in server:
+   ```bash
+   php -S localhost:8000
+   ```
+3. Visit `http://localhost:8000/`
 4. Register an account and start playing!
 
 **PHP Version Required:** 7.4 or higher  
