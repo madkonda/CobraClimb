@@ -8,10 +8,10 @@ A fully PHP-driven Snakes & Ladders board game with user authentication, session
 
 ## 👥 Team Members
 
-| Name | Student ID | Role | Scrum Role |
-|------|-----------|------|------------|
-| Madhu Sudhan Reddy Konda | [9XX-XX-XXXX] | PHP Logic, Sessions, Game Engine | Scrum Master |
-| Harika Kakarala | [9XX-XX-XXXX] | HTML/CSS, Forms, Testing | Product Owner |
+| Name | Role | Scrum Role |
+|------|------|------------|
+| Madhu Sudhan Reddy Konda | PHP Logic, Sessions, Game Engine | Scrum Master |
+| Harika Kakarala | HTML/CSS, Forms, Testing | Product Owner |
 
 ---
 
