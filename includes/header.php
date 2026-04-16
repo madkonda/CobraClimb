@@ -11,6 +11,7 @@ $titles = [
     'register.php'    => 'Register',
     'game.php'        => 'Play Board',
     'leaderboard.php' => 'Leaderboard',
+    'about.php'       => 'About Team',
     'logout.php'      => 'Logging Out',
 ];
 $page_title = $titles[$current_page] ?? 'CobraClimb';
@@ -33,6 +34,7 @@ $page_title = $titles[$current_page] ?? 'CobraClimb';
             <span class="nav-user">👤 <?= $current_user ?></span>
             <a href="game.php"        class="<?= $current_page === 'game.php'        ? 'active' : '' ?>">🎲 Game</a>
             <a href="leaderboard.php" class="<?= $current_page === 'leaderboard.php' ? 'active' : '' ?>">🏆 Scores</a>
+            <a href="about.php"       class="<?= $current_page === 'about.php'       ? 'active' : '' ?>">👥 Team</a>
             <a href="logout.php" class="nav-logout">🚪 Logout</a>
         </nav>
         <?php endif; ?>
