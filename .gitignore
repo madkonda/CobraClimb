@@ -1,7 +1,8 @@
 # CobraClimb .gitignore
 
 # User data (security - don't commit real user passwords)
-data/users.json
+# data/users.json is committed as an empty template
+# data/users.json
 
 # OS files
 .DS_Store
