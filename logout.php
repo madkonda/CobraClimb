@@ -5,12 +5,20 @@
 // ============================================================
 session_start();
 
-// Clear all session variables
-session_unset();
+// Expire the session cookie immediately
+if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+    setcookie(
+        session_name(), '', time() - 42000,
+        $params['path'], $params['domain'],
+        $params['secure'], $params['httponly']
+    );
+}
 
-// Destroy the session
+// Clear all session variables then destroy
+session_unset();
 session_destroy();
 
-// Redirect to login with logged-out message
+// Redirect to login with confirmation message
 header('Location: login.php?msg=logged_out');
 exit();
