@@ -1,0 +1,4 @@
+# Deny direct browser access to the data directory
+# users.json must never be accessible via URL
+Order deny,allow
+Deny from all
